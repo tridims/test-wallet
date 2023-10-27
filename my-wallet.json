@@ -1,0 +1,64 @@
+{
+  "accounts": [
+    {
+      "address": "987ef45ef0cc428cb6b9ecf8f04e189fd643a52f",
+      "id": "d7e0e886-4955-4ca5-82b4-5e076bba6af5",
+      "version": 3,
+      "Crypto": {
+        "cipher": "aes-128-ctr",
+        "cipherparams": {
+          "iv": "d49b6700edd6cd827d4328d96fc186ef"
+        },
+        "ciphertext": "34cf5a1c4bc199f12e1005356ada69a6911073aeadd1b9eacd37ed21230b59e5",
+        "kdf": "scrypt",
+        "kdfparams": {
+          "salt": "5b634f7dcb3bb048600c389981b24cc821933eb7e39bf924923f52acdb737cd7",
+          "n": 131072,
+          "dklen": 32,
+          "p": 1,
+          "r": 8
+        },
+        "mac": "1cada5de5d5188805805b9b205c179b554b897204c67ab899f57f1a66b2af16d"
+      },
+      "x-ethers": {
+        "client": "ethers/6.8.0",
+        "gethFilename": "UTC--2023-10-27T05-48-44.0Z--987ef45ef0cc428cb6b9ecf8f04e189fd643a52f",
+        "path": "m",
+        "locale": "en",
+        "mnemonicCounter": "ffb42a468ad676080c45a9e55fd7727b",
+        "mnemonicCiphertext": "df7804c637f7b9847cc0664d9956080b",
+        "version": "0.1"
+      }
+    },
+    {
+      "address": "b029d50df9d1fad398291fe7d04df0d46679cca2",
+      "id": "5785a265-bf03-4a76-bc3d-991ca6c175d1",
+      "version": 3,
+      "Crypto": {
+        "cipher": "aes-128-ctr",
+        "cipherparams": {
+          "iv": "ce307df2fe09a8778b6e100a520c8352"
+        },
+        "ciphertext": "0b32d1f61a62dc897a5dcb8cff01ff960dfc7d19103c5864b52d4216bf8bbfd7",
+        "kdf": "scrypt",
+        "kdfparams": {
+          "salt": "90475e44f0b0e454f8337b4df2bb84e95fccc31498a181152c3fbe3fedb0723a",
+          "n": 131072,
+          "dklen": 32,
+          "p": 1,
+          "r": 8
+        },
+        "mac": "3d6a75186620e36093a923237e812db9812a3e5c93884e28c42a767df9920e64"
+      },
+      "x-ethers": {
+        "client": "ethers/6.8.0",
+        "gethFilename": "UTC--2023-10-27T05-48-45.0Z--b029d50df9d1fad398291fe7d04df0d46679cca2",
+        "path": "m",
+        "locale": "en",
+        "mnemonicCounter": "8a6cd6892735a5ca4c1fc6cba4b61deb",
+        "mnemonicCiphertext": "82290de0d878db8193147c08b35688b0",
+        "version": "0.1"
+      }
+    }
+  ]
+}

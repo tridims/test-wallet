@@ -1,11 +1,7 @@
-# test-project
+step to run:
 
-This library was generated with [Nx](https://nx.dev).
+```bash
+yarn install
+yarn start
 
-## Building
-
-Run `nx build test-project` to build the library.
-
-## Running unit tests
-
-Run `nx test test-project` to execute the unit tests via [Jest](https://jestjs.io).
+```

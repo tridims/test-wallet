@@ -4,9 +4,12 @@
   "license": "MIT",
   "scripts": {
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "start": "ts-node ./src/index.ts"
   },
   "dependencies": {
+    "ethers": "^6.8.0",
+    "ts-node": "^10.9.1",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
