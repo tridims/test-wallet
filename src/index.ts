@@ -6,14 +6,14 @@ const URL = 'https://sepolia.infura.io/v3/7746850a8fb348599a052c1c18d78a14';
 const PASSWORD = 'password';
 
 async function main() {
-  // check if wallet file exists
   const wallet = await MyWallet.loadFromFile(PASSWORD);
   const provider = new ethers.JsonRpcProvider(URL);
-
   await wallet.connectProvider(provider);
 
-  await wallet.showAccountsBalance();
+  // BALANCE
+  // await wallet.showAccountsBalance();
 
+  // TRANSFER
   // const account1 = wallet.accountsAt(0);
   // const account2 = wallet.accountsAt(1);
 
@@ -24,7 +24,9 @@ async function main() {
 
   // console.log(tx);
 
-  // await wallet.showAccountsBalance();
+  // CREATE ACCOUNT
+  const newAccount = await wallet.createNewAccount();
+  console.log(newAccount);
 }
 
 main();

@@ -39,7 +39,7 @@ export default class MyWallet {
 
   // create new account using mnemonic and path
   async createNewAccount() {
-    const path = `${START_PATH}${this.#accounts.length}`;
+    const path = `${START_PATH}/${this.#accounts.length}`;
     const account = await Account.createFromMnemonic(this.#mnemonic, path);
 
     account.connect(this.#provider);
@@ -61,26 +61,30 @@ export default class MyWallet {
 
   async showAccountsBalance() {
     for (const account of this.#accounts) {
-      const balance = await this.#getBalance(account.address);
+      const balance = await this.#provider.getBalance(account.address);
       console.log(`${account.address} : ${formatEther(balance)}`);
     }
   }
 
-  async #getBalance(address: string) {
-    return this.#provider.getBalance(address);
-  }
-
   async saveToFile(file?: string) {
     const _file = file || DEFAULT_FILE;
-    const jsonKeystore = await Account.dumpMultiple(
-      this.#accounts,
-      this.#password
-    );
+    const jsonKeystore = await this.dumpAccounts();
 
     fs.writeFileSync(_file, jsonKeystore);
   }
 
-  // STATIC
+  async dumpAccounts(): Promise<string> {
+    const jsonKeystore: { accounts: Account[] } = {
+      accounts: []
+    };
+
+    for (const account of this.#accounts) {
+      jsonKeystore.accounts.push(await account.encryptAccount(this.#password));
+    }
+
+    return JSON.stringify(jsonKeystore, null, 2);
+  }
+
   static async loadFromFile(
     password: string,
     file?: string
@@ -88,8 +92,26 @@ export default class MyWallet {
     const _file = file || DEFAULT_FILE;
     const jsonKeystore = fs.readFileSync(_file, 'utf8');
 
-    const accounts = await Account.loadMultiple(jsonKeystore, password);
+    const accounts = await MyWallet.loadAccounts(jsonKeystore, password);
 
     return new MyWallet(password, undefined, accounts);
+  }
+
+  static async loadAccounts(
+    json: string,
+    password: string
+  ): Promise<Account[]> {
+    const accounts: Account[] = [];
+    const jsonKeystore = JSON.parse(json);
+
+    for (const account of jsonKeystore.accounts) {
+      const wallet = await Account.decryptKeyStore(
+        JSON.stringify(account),
+        password
+      );
+      accounts.push(wallet);
+    }
+
+    return accounts;
   }
 }

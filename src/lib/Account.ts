@@ -11,8 +11,7 @@ import {
   getBytes,
   computeHmac,
   hexlify,
-  decryptKeystoreJson,
-  JsonRpcProvider
+  decryptKeystoreJson
 } from 'ethers';
 
 import { BITCOIN_MASTERSECRET, START_PATH } from './utilities/constants';
@@ -32,7 +31,7 @@ export default class Account extends BaseWallet {
     signingKey: SigningKey,
     parentFingerprint: string,
     chainCode: string,
-    path: null | string,
+    path: string,
     index: number,
     depth: number,
     mnemonic: null | Mnemonic,
@@ -52,19 +51,19 @@ export default class Account extends BaseWallet {
     this.provider = provider;
   }
 
-  getKeystoreAccount(): KeystoreAccount {
+  getKeystoreFormat(): KeystoreAccount {
     const account: KeystoreAccount = {
       address: this.address,
       privateKey: this.privateKey
     };
+
     const m = this.mnemonic;
-    if (this.path && m && m.wordlist.locale === 'en' && m.password === '') {
-      account.mnemonic = {
-        path: this.path,
-        locale: 'en',
-        entropy: m.entropy
-      };
-    }
+
+    account.mnemonic = {
+      path: this.path,
+      locale: 'en',
+      entropy: m.entropy
+    };
 
     return account;
   }
@@ -76,16 +75,15 @@ export default class Account extends BaseWallet {
 
   async encryptAccount(password: Uint8Array | string): Promise<Account> {
     return JSON.parse(
-      await encryptKeystoreJson(this.getKeystoreAccount(), password)
+      await encryptKeystoreJson(this.getKeystoreFormat(), password)
     );
   }
 
   // STATIC METHODS
-  static createFromMnemonic(mnemonic: Mnemonic, path?: string): Account {
-    if (!path) {
-      path = START_PATH;
-    }
-
+  static createFromMnemonic(
+    mnemonic: Mnemonic,
+    path: string = START_PATH
+  ): Account {
     const seed = getBytes(mnemonic.computeSeed(), 'seed');
     const I = getBytes(computeHmac('sha512', BITCOIN_MASTERSECRET, seed));
     const signingKey = new SigningKey(hexlify(I.slice(0, 32)));
@@ -94,7 +92,7 @@ export default class Account extends BaseWallet {
       signingKey,
       '0x00000000',
       hexlify(I.slice(32)),
-      'm',
+      path,
       0,
       0,
       mnemonic,
@@ -102,61 +100,20 @@ export default class Account extends BaseWallet {
     );
   }
 
-  static async decryptKeyStoreJSON(
+  static async decryptKeyStore(
     json: string,
     password: string
   ): Promise<Account> {
-    const account: KeystoreAccount = await decryptKeystoreJson(json, password);
+    const keyStoreAccount: KeystoreAccount = await decryptKeystoreJson(
+      json,
+      password
+    );
 
-    if (
-      'mnemonic' in account &&
-      account.mnemonic &&
-      account.mnemonic.locale === 'en'
-    ) {
-      const mnemonic = Mnemonic.fromEntropy(account.mnemonic.entropy);
-      const wallet = Account.createFromMnemonic(
-        mnemonic,
-        account.mnemonic.path
-      );
-      if (
-        wallet.address === account.address &&
-        wallet.privateKey === account.privateKey
-      ) {
-        return wallet;
-      }
-    }
-  }
-
-  static async loadMultiple(
-    json: string,
-    password: string
-  ): Promise<Account[]> {
-    const accounts: Account[] = [];
-    const jsonKeystore = JSON.parse(json);
-
-    for (const account of jsonKeystore.accounts) {
-      const wallet = await Account.decryptKeyStoreJSON(
-        JSON.stringify(account),
-        password
-      );
-      accounts.push(wallet);
-    }
-
-    return accounts;
-  }
-
-  static async dumpMultiple(
-    accounts: Account[],
-    password: string
-  ): Promise<string> {
-    const jsonKeystore: { accounts: Account[] } = {
-      accounts: []
-    };
-
-    for (const account of accounts) {
-      jsonKeystore.accounts.push(await account.encryptAccount(password));
-    }
-
-    return JSON.stringify(jsonKeystore, null, 2);
+    const mnemonic = Mnemonic.fromEntropy(keyStoreAccount.mnemonic.entropy);
+    const account = Account.createFromMnemonic(
+      mnemonic,
+      keyStoreAccount.mnemonic.path
+    );
+    return account;
   }
 }
